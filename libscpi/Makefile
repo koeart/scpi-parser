@@ -2,7 +2,10 @@ LIBNAME = scpi
 
 CFLAGS += -Wextra -Wmissing-prototypes -Wimplicit -g -Iinc
 LDFLAGS += -Wl,--as-needed
-TESTFLAGS += -lcunit $(CFLAGS)
+#TESTCFLAGS += $(CFLAGS) `pkg-config --cflags cunit`
+#TESTLDFLAGS += $(LDFLAGS) `pkg-config --libs cunit`
+TESTCFLAGS += $(CFLAGS)
+TESTLDFLAGS += $(LDFLAGS) -lcunit
 
 OBJDIR=obj
 DISTDIR=dist
@@ -47,7 +50,7 @@ clean:
 	$(RM) -r $(OBJDIR) $(DISTDIR) $(TESTS_BINS) $(TESTS_OBJS)
 
 test: $(TESTS_BINS)
-	for t in $(TESTS_BINS); do ./$$t; done
+	$(TESTS_BINS:.test=.test &&) true
 
 $(OBJDIR):
 	mkdir -p $@
@@ -66,10 +69,10 @@ $(OBJS): $(HDRS) $(DISTDIR) $(OBJDIR) $(SRCS)
 
 
 $(TESTDIR)/%.o: $(TESTDIR)/%.c
-	$(CC) -c $(CFLAGS) $(CPPFLAGS) -o $@ $<
+	$(CC) -c $(TESTCFLAGS) $(CPPFLAGS) -o $@ $<
 
 $(TESTDIR)/%.test: $(TESTDIR)/%.o $(DISTDIR)/$(STATICLIB)
-	$(CC) $(TESTFLAGS) $< $(DISTDIR)/$(STATICLIB) -o $@ $(LDFLAGS)
+	$(CC) $< -o $@ $(DISTDIR)/$(STATICLIB) $(TESTLDFLAGS)
 
 
 

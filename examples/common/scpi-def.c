@@ -170,11 +170,9 @@ static scpi_result_t TEST_Text(scpi_t * context) {
     char buffer[100];
     size_t copy_len;
 
-    if (!SCPI_ParamCopyText(context, buffer, sizeof(buffer), &copy_len, TRUE)) {
-	return SCPI_RES_ERR;
+    if (!SCPI_ParamCopyText(context, buffer, sizeof(buffer), &copy_len, FALSE)) {
+        buffer[0] = '\0';
     }
-    
-    buffer[copy_len] = '\0';
 
     fprintf(stderr, "TEXT: ***%s***\r\n", buffer);
 
